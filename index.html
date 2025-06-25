@@ -114,6 +114,39 @@
         }
     </style>
 </head>
+
+<!-- MODAL D'ÉDITION -->
+<div id="editModal">
+    <h3>Modifier l’intervention</h3>
+    <input type="hidden" id="editHorodatage">
+    
+    <label>Client :</label>
+    <input type="text" id="editClient">
+    
+    <label>Dossier :</label>
+    <input type="text" id="editDossier">
+    
+    <label>Moyens :</label>
+    <input type="text" id="editMoyens">
+    
+    <label>Date :</label>
+    <input type="date" id="editDate">
+    
+    <label>Montant :</label>
+    <input type="number" id="editMontant" step="0.01">
+    
+    <label>Commentaires :</label>
+    <textarea id="editCommentaires" rows="3"></textarea>
+
+    <label>Couleur du dossier :</label>
+    <input type="color" id="editCouleur" value="#d95c14">
+
+    <br><br>
+    <button onclick="submitEdit()">💾 Sauvegarder</button>
+    <button onclick="closeEdit()">❌ Annuler</button>
+</div>
+
+
 <body>
     <header>
         <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet">
@@ -323,5 +356,13 @@
                 .catch(err => console.warn("❌ Erreur Service Worker", err));
         }
     </script>
+	
+    <script>
+    	function closeEdit() {
+        	document.getElementById('editModal').style.display = 'none';
+    	}
+    </script>
+	
+
 </body>
 </html>
