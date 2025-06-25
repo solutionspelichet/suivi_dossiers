@@ -356,7 +356,24 @@
                 .catch(err => console.warn("❌ Erreur Service Worker", err));
         }
     </script>
-	
+	<script>
+function deleteEntry(horodatage) {
+    if (!confirm("Supprimer cette intervention ?")) return;
+
+    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?delete=1&horodatage=" + encodeURIComponent(horodatage), {
+        method: "GET"
+    })
+    .then(response => response.text())
+    .then(res => {
+        console.log("🗑️ Suppression réussie :", res);
+        loadData();
+    })
+    .catch(error => {
+        console.error("❌ Erreur lors de la suppression :", error);
+    });
+}
+</script>
+
     <script>
     	function closeEdit() {
         	document.getElementById('editModal').style.display = 'none';
