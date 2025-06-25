@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Suivi des Dossiers Clients - Pelichet</title>
+    <!-- Manifest + couleur navigateur mobile -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d95c14">
+
+    <!-- Icône pour iOS -->
+    <link rel="apple-touch-icon" href="logo-192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -126,6 +133,16 @@
     <button onclick="submitEdit()">💾 Enregistrer</button>
     <button onclick="closeEdit()">❌ Annuler</button>
 </div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log("✅ Service Worker enregistré", reg))
+      .catch(err => console.warn("❌ Erreur Service Worker", err));
+  }
+</script>
+
+
 
 <body>
     <header>
