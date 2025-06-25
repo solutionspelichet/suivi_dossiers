@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Suivi des Dossiers Clients - Pelichet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+    <style>
+        /* ... Styles conservés depuis l'envoi HTML ... */
+    </style>
+</head>
+<body>
+    <header>
+        <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet">
+        <h1>Suivi des Dossiers Clients</h1>
+    </header>
+
+    <nav>
+        <button onclick="showSection('formulaire')">Formulaire</button>
+        <button onclick="showSection('tableau')">Tableau</button>
+        <button onclick="showSection('calendrier')">Calendrier</button>
+    </nav>
+
+    <section id="formulaire" class="active">
+        <form id="intervention-form">
+            <label for="client">Nom du client :</label>
+            <input type="text" id="client" name="client" required>
+            <label for="dossier">Numéro de dossier :</label>
+            <input type="text" id="dossier" name="dossier" required>
+            <label for="moyens">Moyens à mettre :</label>
+            <input type="text" id="moyens" name="moyens">
+            <label for="date">Date de l’intervention :</label>
+            <input type="date" id="date" name="date" required>
+            <label for="montant">Montant facturé :</label>
+            <input type="number" id="montant" name="montant" step="0.01">
+            <label for="commentaires">Commentaires :</label>
+            <textarea id="commentaires" name="commentaires" rows="3"></textarea>
+            <button type="button" onclick="submitForm()">Enregistrer</button>
+            <div id="confirmation"></div>
+        </form>
+    </section>
+
+    <section id="tableau">
+        <table id="dataTable" class="display">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Dossier</th>
+                    <th>Moyens</th>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Commentaires</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="calendrier">
+        <div id="calendar"></div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        let calendar;
+
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function submitForm() {
+            const form = document.getElementById("intervention-form");
+            const data = new FormData(form);
+            const params = new URLSearchParams();
+            for (const pair of data) {
+                params.append(pair[0], pair[1]);
+            }
+
+            fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", {
+                method: "POST",
+                body: params
+            })
+            .then(response => response.text())
+            .then(result => {
+                document.getElementById("confirmation").textContent = "Intervention enregistrée avec succès !";
+                form.reset();
+                loadData();
+            })
+            .catch(error => {
+                document.getElementById("confirmation").textContent = "Erreur lors de l'enregistrement.";
+                console.error("Erreur :", error);
+            });
+        }
+	
+	function loadData() {
+    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec")
+        .then(response => response.json())
+        .then(data => {
+            console.log("📦 Données reçues :", data); // 🟢 Ajout ici
+
+            // Mise à jour du tableau
+            const table = $('#dataTable').DataTable();
+            table.clear();
+            data.forEach(row => {
+                table.row.add([
+                    row.client,
+                    row.dossier,
+                    row.moyens,
+                    row.date,
+                    row.montant,
+                    row.commentaires
+                ]);
+            });
+            table.draw();
+
+            // Mise à jour du calendrier
+            calendar.removeAllEvents();
+            data.forEach(row => {
+                if (row.date) {
+                    calendar.addEvent({
+                        title: row.client + " (" + row.dossier + ")",
+                        start: row.date,
+                        description: row.commentaires
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement des données :", error);
+        });
+}
+
+
+
+       
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                events: []
+            });
+            calendar.render();
+
+            $('#dataTable').DataTable();
+            loadData();
+        });
+    </script>
+</body>
+</html>
+
+<script>
+function openEditForm(row) {
+    document.getElementById('editHorodatage').value = row.horodatage;
+    document.getElementById('editClient').value = row.client;
+    document.getElementById('editDossier').value = row.dossier;
+    document.getElementById('editMoyens').value = row.moyens;
+    document.getElementById('editDate').value = row.date;
+    document.getElementById('editMontant').value = row.montant;
+    document.getElementById('editCommentaires').value = row.commentaires;
+    document.getElementById('editModal').style.display = 'block';
+}
+function closeEdit() {
+    document.getElementById('editModal').style.display = 'none';
+}
+function submitEdit() {
+    const params = new URLSearchParams();
+    params.append("horodatage", document.getElementById('editHorodatage').value);
+    params.append("client", document.getElementById('editClient').value);
+    params.append("dossier", document.getElementById('editDossier').value);
+    params.append("moyens", document.getElementById('editMoyens').value);
+    params.append("date", document.getElementById('editDate').value);
+    params.append("montant", document.getElementById('editMontant').value);
+    params.append("commentaires", document.getElementById('editCommentaires').value);
+
+    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?edit=1", {
+        method: "POST",
+        body: params
+    })
+    .then(response => response.text())
+    .then(res => {
+        closeEdit();
+        loadData();
+    });
+}
+
+function deleteEntry(horodatage) {
+    if (!confirm("Supprimer cette intervention ?")) return;
+    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?delete=1&horodatage=" + encodeURIComponent(horodatage), {
+        method: "GET"
+    })
+    .then(response => response.text())
+    .then(res => {
+        loadData();
+    });
+}
+</script>

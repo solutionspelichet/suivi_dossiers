@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tableau & Calendrier</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { color: #d35400; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f39c12; color: white; }
+    #calendrier { max-width: 900px; margin: auto; }
+  </style>
+</head>
+<body>
+  <h2>Interventions – Tableau</h2>
+  <table id="tableau-donnees">
+    <thead>
+      <tr>
+        <th>Horodatage</th><th>Client</th><th>Dossier</th><th>Moyens</th>
+        <th>Date</th><th>Montant</th><th>Commentaires</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Interventions – Calendrier</h2>
+  <div id="calendrier"></div>
+
+  <script>
+    async function chargerDonnees() {
+      const url = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLitXmvj9sObRRQe5y9ldTomItLC11YlE_mw9GStjTHSaTNj3gvIfda_jcoAVrMVnYM8x44zf-O9d6reGy7K8RAsfO_S8GMZcIVZV1OlQwhczn1F8PA_Lk-kNUARFBn1vWolA3CgnfykVOrTrtf0sLsI81Jn94Br4SFF5khvmu2Omx2BZoqX23c3Vtrmrsec9Fl-KtKwUVYmrlY1MRW8ss0FIxTKBizNcWQLhJqQwH14DWp2Jh0Yeujv-97IttBeQ1PwNtIxP-3AYXgc9n2k_ewHgFe0605HT2vv6eWK&lib=MEpBGahcPA26yUIt43lQ2EXeaZr-QFdck";
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        afficherDansTableau(data);
+        afficherDansCalendrier(data);
+      } catch (error) {
+        console.error("Erreur de chargement :", error);
+      }
+    }
+
+    function afficherDansTableau(data) {
+      const tableBody = document.querySelector("#tableau-donnees tbody");
+      tableBody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.horodatage}</td>
+          <td>${row.client}</td>
+          <td>${row.dossier}</td>
+          <td>${row.moyens}</td>
+          <td>${row.date}</td>
+          <td>${row.montant}</td>
+          <td>${row.commentaires}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function afficherDansCalendrier(data) {
+      const calendarEl = document.getElementById('calendrier');
+      const events = data.map(entry => ({
+        title: `${entry.client} – ${entry.moyens}`,
+        start: entry.date,
+        description: entry.commentaires
+      }));
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        events: events
+      });
+
+      calendar.render();
+    }
+
+    window.onload = chargerDonnees;
+  </script>
+</body>
+</html>
