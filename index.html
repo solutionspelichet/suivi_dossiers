@@ -3,147 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <title>Suivi des Dossiers Clients - Pelichet</title>
-    <!-- Manifest + couleur navigateur mobile -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#d95c14">
-
-    <!-- Icône pour iOS -->
-    <link rel="apple-touch-icon" href="logo-192.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d95c14">
+    <link rel="apple-touch-icon" href="logo-192.png">
     <style>
-    body {
-        font-family: 'Trebuchet MS', sans-serif;
-        background-color: #f9f9f9;
-        margin: 0;
-        padding: 20px;
-        color: #333;
-    }
-    header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    header img {
-        height: 60px;
-    }
-    h1 {
-        color: #d95c14;
-    }
-    nav {
-        margin-bottom: 20px;
-    }
-    nav button {
-        margin-right: 10px;
-        padding: 10px 15px;
-        border: none;
-        background-color: #d95c14;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    section {
-        display: none;
-    }
-    section.active {
-        display: block;
-    }
-    form {
-        background: #fff;
-        padding: 20px;
-        border: 2px solid #eee;
-        border-radius: 10px;
-        margin-bottom: 40px;
-        max-width: 600px;
-    }
-    form label {
-        display: block;
-        margin: 12px 0 6px;
-    }
-    form input, form textarea {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-    }
-    form button {
-        margin-top: 15px;
-        background-color: #d95c14;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-    #confirmation {
-        margin-top: 10px;
-        color: green;
-        font-weight: bold;
-    }
-    #calendar {
-    min-height: 600px;
-        max-width: 900px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    table.dataTable {
-        width: 100% !important;
-        margin-top: 20px;
-        background-color: white;
-    }
-    #editModal {
-        display: none;
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        z-index: 9999;
-        max-width: 400px;
-    }
-    #editModal h3 {
-        margin-top: 0;
-    }
-    #editModal label {
-        display: block;
-        margin-bottom: 10px;
-    }
-</style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        header img {
+            height: 60px;
+        }
+        h1 {
+            color: #d95c14;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav button {
+            margin-right: 10px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #d95c14;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        section {
+            display: none;
+        }
+        section.active {
+            display: block;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+        form label {
+            display: block;
+            margin: 12px 0 6px;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        form button {
+            margin-top: 15px;
+            background-color: #d95c14;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #confirmation {
+            margin-top: 10px;
+            color: green;
+            font-weight: bold;
+        }
+        #calendar {
+            min-height: 600px;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        table.dataTable {
+            width: 100% !important;
+            margin-top: 20px;
+            background-color: white;
+        }
+        #editModal {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 9999;
+            max-width: 400px;
+        }
+        #editModal h3 {
+            margin-top: 0;
+        }
+        #editModal label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
-<!-- Modal de modification -->
-<div id="editModal">
-    <h3>Modifier l’intervention</h3>
-    <input type="hidden" id="editHorodatage">
-    <label>Client : <input type="text" id="editClient"></label>
-    <label>Dossier : <input type="text" id="editDossier"></label>
-    <label>Moyens : <input type="text" id="editMoyens"></label>
-    <label>Date : <input type="date" id="editDate"></label>
-    <label>Montant : <input type="number" id="editMontant" step="0.01"></label>
-    <label>Commentaires : <textarea id="editCommentaires" rows="3"></textarea></label>
-    <label for="editCouleur">Couleur du dossier :</label>
-    <input type="color" id="editCouleur" name="couleur">
-    <button onclick="submitEdit()">💾 Enregistrer</button>
-    <button onclick="closeEdit()">❌ Annuler</button>
-</div>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log("✅ Service Worker enregistré", reg))
-      .catch(err => console.warn("❌ Erreur Service Worker", err));
-  }
-</script>
-
-
-
 <body>
     <header>
         <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet">
@@ -312,53 +282,46 @@
     </script>
 </body>
 </html>
+    <script>
+        function openEditForm(row) {
+            document.getElementById('editHorodatage').value = row.horodatage;
+            document.getElementById('editClient').value = row.client;
+            document.getElementById('editDossier').value = row.dossier;
+            document.getElementById('editMoyens').value = row.moyens;
+            document.getElementById('editDate').value = row.date;
+            document.getElementById('editMontant').value = row.montant;
+            document.getElementById('editCommentaires').value = row.commentaires;
+            document.getElementById('editCouleur').value = row.couleur || '#d95c14';
+            document.getElementById('editModal').style.display = 'block';
+        }
 
-<script>
-function openEditForm(row) {
-    document.getElementById('editHorodatage').value = row.horodatage;
-    document.getElementById('editClient').value = row.client;
-    document.getElementById('editDossier').value = row.dossier;
-    document.getElementById('editMoyens').value = row.moyens;
-    document.getElementById('editDate').value = row.date;
-    document.getElementById('editMontant').value = row.montant;
-    document.getElementById('editCommentaires').value = row.commentaires;
-    document.getElementById('editModal').style.display = 'block';
-    document.getElementById('editCouleur').value = row.couleur || "#d95c14";
+        function submitEdit() {
+            const params = new URLSearchParams();
+            params.append("horodatage", document.getElementById('editHorodatage').value);
+            params.append("client", document.getElementById('editClient').value);
+            params.append("dossier", document.getElementById('editDossier').value);
+            params.append("moyens", document.getElementById('editMoyens').value);
+            params.append("date", document.getElementById('editDate').value);
+            params.append("montant", document.getElementById('editMontant').value);
+            params.append("commentaires", document.getElementById('editCommentaires').value);
+            params.append("couleur", document.getElementById('editCouleur').value);
 
-}
-function closeEdit() {
-    document.getElementById('editModal').style.display = 'none';
-}
-function submitEdit() {
-    const params = new URLSearchParams();
-    params.append("horodatage", document.getElementById('editHorodatage').value);
-    params.append("client", document.getElementById('editClient').value);
-    params.append("dossier", document.getElementById('editDossier').value);
-    params.append("moyens", document.getElementById('editMoyens').value);
-    params.append("date", document.getElementById('editDate').value);
-    params.append("montant", document.getElementById('editMontant').value);
-    params.append("commentaires", document.getElementById('editCommentaires').value);
-    params.append("couleur", document.getElementById('editCouleur').value);
+            fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?edit=1", {
+                method: "POST",
+                body: params
+            })
+            .then(response => response.text())
+            .then(res => {
+                closeEdit();
+                loadData();
+            });
+        }
 
-    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?edit=1", {
-        method: "POST",
-        body: params
-    })
-    .then(response => response.text())
-    .then(res => {
-        closeEdit();
-        loadData();
-    });
-}
-
-function deleteEntry(horodatage) {
-    if (!confirm("Supprimer cette intervention ?")) return;
-    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?delete=1&horodatage=" + encodeURIComponent(horodatage), {
-        method: "GET"
-    })
-    .then(response => response.text())
-    .then(res => {
-        loadData();
-    });
-}
-</script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log("✅ Service Worker enregistré", reg))
+                .catch(err => console.warn("❌ Erreur Service Worker", err));
+        }
+    </script>
+</body>
+</html>
