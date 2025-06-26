@@ -53,17 +53,19 @@
 </div>
 
 <div id="mainApp" style="display: none;">
-  <header>
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 20px;">
+  <div style="display: flex; align-items: center; gap: 20px;">
     <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet" style="height: 60px;">
-    <h1>Suivi des Dossiers Clients</h1>
-    <button onclick="logout()" style="margin-left: auto;">🔒 Déconnexion</button>
-  </header>
+    <h1 style="margin: 0;">Suivi des Dossiers Clients</h1>
+  </div>
+  <button onclick="logout()">🔒 Déconnexion</button>
+</header>
 
-  <nav>
-    <button onclick="showSection('formulaire')">Formulaire</button>
-    <button onclick="showSection('tableau')">Tableau</button>
-    <button onclick="showSection('calendrier')">Calendrier</button>
-  </nav>
+ <nav style="display: flex; gap: 12px; margin-bottom: 20px;">
+  <button onclick="showSection('formulaire')">Formulaire</button>
+  <button onclick="showSection('tableau')">Tableau</button>
+  <button onclick="showSection('calendrier')">Calendrier</button>
+</nav>
 
   <p id="userDisplay"></p>
 
@@ -228,7 +230,11 @@ function loadData() {
           formatDate(row.date),
           row.montant,
           row.commentaires,
-          `<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
+          `<div style="display:flex; gap: 6px;">
+  <button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button>
+  <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>
+</div>`
+
         ]);
       });
       table.draw();
