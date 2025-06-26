@@ -330,7 +330,12 @@ function formatDate(dateStr) {
             document.getElementById('editClient').value = row.client;
             document.getElementById('editDossier').value = row.dossier;
             document.getElementById('editMoyens').value = row.moyens;
-            document.getElementById('editDate').value = row.date;
+            if (row.date.includes('T')) {
+                document.getElementById('editDate').value = row.date.split('T')[0];
+            } else {
+                document.getElementById('editDate').value = row.date;
+            }
+
             document.getElementById('editMontant').value = row.montant;
             document.getElementById('editCommentaires').value = row.commentaires;
             document.getElementById('editCouleur').value = row.couleur || '#d95c14';
