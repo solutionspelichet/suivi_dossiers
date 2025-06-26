@@ -161,6 +161,14 @@
 
     <section id="formulaire" class="active">
         <form id="intervention-form">
+            <label for="utilisateur">Utilisateur :</label>
+            <select id="utilisateur" name="utilisateur" required>
+                <option value="">-- Sélectionnez --</option>
+                <option value="arnaud.guedou@pelichet.ch">Alice</option>
+                <option value="nicolas.corazzol@pelichet.ch">Bob</option>
+                <option value="encule@example.com">Charlie</option>
+            </select>
+
             <label for="client">Nom du client :</label>
             <input type="text" id="client" name="client" required>
             <label for="dossier">Numéro de dossier :</label>
@@ -225,7 +233,10 @@
             const params = new URLSearchParams();
             for (const pair of data) {
                 params.append(pair[0], pair[1]);
+                
             }
+
+            params.append("utilisateur", document.getElementById("utilisateur").value);
 
             fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", {
                 method: "POST",
@@ -241,7 +252,33 @@
                 document.getElementById("confirmation").textContent = "Erreur lors de l'enregistrement.";
                 console.error("Erreur :", error);
             });
-        }
+        }function submitForm() {
+    const form = document.getElementById("intervention-form");
+    const data = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (const pair of data) {
+        params.append(pair[0], pair[1]);
+    }
+
+    // pas besoin de ligne spéciale pour utilisateur ici, il est dans le formulaire
+
+    fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
+        method: "POST",
+        body: params
+    })
+    .then(response => response.text())
+    .then(result => {
+        document.getElementById("confirmation").textContent = "Intervention enregistrée avec succès !";
+        form.reset();
+        loadData();
+    })
+    .catch(error => {
+        document.getElementById("confirmation").textContent = "Erreur lors de l'enregistrement.";
+        console.error("Erreur :", error);
+    });
+}
+
 	
     const dossierColors = {};
 
@@ -256,7 +293,8 @@
 
 
 	function loadData() {
-    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec")
+        params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
+        fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec")
         .then(response => response.json())
         .then(data => {
             console.log("📦 Données reçues :", data); // 🟢 Ajout ici
@@ -352,6 +390,7 @@ function formatDate(dateStr) {
             params.append("montant", document.getElementById('editMontant').value);
             params.append("commentaires", document.getElementById('editCommentaires').value);
             params.append("couleur", document.getElementById('editCouleur').value);
+            params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
 
             fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?edit=1", {
                 method: "POST",
@@ -377,6 +416,7 @@ function deleteEntry(horodatage) {
   const params = new URLSearchParams();
   params.append("delete", "1");
   params.append("horodatage", horodatage);
+  params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
 
   fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", {
     method: "POST",
