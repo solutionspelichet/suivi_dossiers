@@ -273,9 +273,8 @@ function loadData() {
         console.warn("Aucun utilisateur sélectionné");
         return;
     }
-
-    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
-
+fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
+    
         .then(response => response.json())
         .then(data => {
             const table = $('#dataTable').DataTable();
