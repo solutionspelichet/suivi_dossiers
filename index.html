@@ -54,6 +54,7 @@
   <header>
     <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet" style="height: 60px;">
     <h1>Suivi des Dossiers Clients</h1>
+    <button onclick="logout()" style="margin-left: auto;">🔒 Déconnexion</button>
   </header>
 
   <nav>
@@ -249,6 +250,17 @@ document.addEventListener('DOMContentLoaded', function () {
   calendar.render();
   $('#dataTable').DataTable();
 });
+
+function logout() {
+  userEmail = "";
+  document.getElementById("mainApp").style.display = "none";
+  document.getElementById("loginBox").style.display = "block";
+  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginPassword").value = "";
+  document.getElementById("loginError").textContent = "";
+}
+
+
 </script>
 </body>
 </html>
