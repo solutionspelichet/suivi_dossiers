@@ -18,6 +18,10 @@
     #userDisplay { font-weight: bold; margin-bottom: 20px; }
     #calendar { background: white; padding: 20px; border-radius: 10px; margin-top: 20px; }
     table.dataTable { width: 100% !important; background: white; margin-top: 20px; }
+    nav { margin-bottom: 20px; text-align: center; }
+    nav button { margin-right: 10px; }
+    section { display: none; }
+    section.active { display: block; }
   </style>
 </head>
 <body>
@@ -40,27 +44,39 @@
 
   <p id="userDisplay"></p>
 
-  <form id="intervention-form">
-    <input type="hidden" id="utilisateur" name="utilisateur">
-    <label>Client :</label><input type="text" id="client" name="client" required>
-    <label>Dossier :</label><input type="text" id="dossier" name="dossier" required>
-    <label>Moyens :</label><input type="text" id="moyens" name="moyens">
-    <label>Date :</label><input type="date" id="date" name="date" required>
-    <label>Montant :</label><input type="number" id="montant" name="montant" step="0.01">
-    <label>Couleur :</label><input type="color" id="couleur" name="couleur" value="#d95c14">
-    <label>Commentaires :</label><textarea id="commentaires" name="commentaires"></textarea>
-    <button type="button" onclick="submitForm()">Enregistrer</button>
-    <div id="confirmation"></div>
-  </form>
+  <nav>
+    <button onclick="showSection('formulaire')">Formulaire</button>
+    <button onclick="showSection('tableau')">Tableau</button>
+    <button onclick="showSection('calendrier')">Calendrier</button>
+  </nav>
 
-  <table id="dataTable" class="display">
-    <thead>
-      <tr><th>Client</th><th>Dossier</th><th>Moyens</th><th>Date</th><th>Montant</th><th>Commentaires</th><th>Actions</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <section id="formulaire" class="active">
+    <form id="intervention-form">
+      <input type="hidden" id="utilisateur" name="utilisateur">
+      <label>Client :</label><input type="text" id="client" name="client" required>
+      <label>Dossier :</label><input type="text" id="dossier" name="dossier" required>
+      <label>Moyens :</label><input type="text" id="moyens" name="moyens">
+      <label>Date :</label><input type="date" id="date" name="date" required>
+      <label>Montant :</label><input type="number" id="montant" name="montant" step="0.01">
+      <label>Couleur :</label><input type="color" id="couleur" name="couleur" value="#d95c14">
+      <label>Commentaires :</label><textarea id="commentaires" name="commentaires"></textarea>
+      <button type="button" onclick="submitForm()">Enregistrer</button>
+      <div id="confirmation"></div>
+    </form>
+  </section>
 
-  <div id="calendar"></div>
+  <section id="tableau">
+    <table id="dataTable" class="display">
+      <thead>
+        <tr><th>Client</th><th>Dossier</th><th>Moyens</th><th>Date</th><th>Montant</th><th>Commentaires</th><th>Actions</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="calendrier">
+    <div id="calendar"></div>
+  </section>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
@@ -83,10 +99,17 @@
       document.getElementById("mainApp").style.display = "block";
       document.getElementById("utilisateur").value = email;
       document.getElementById("userDisplay").textContent = "Connecté : " + users[email].nom;
+      showSection('formulaire');
       loadData();
     } else {
       document.getElementById("loginError").textContent = "Email ou mot de passe incorrect.";
     }
+  }
+
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'calendrier' && calendar) calendar.render();
   }
 
   let calendar;
