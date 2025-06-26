@@ -38,6 +38,8 @@
     #editModal h3 { margin-top: 0; }
     #editModal label { display: block; margin-bottom: 10px; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="loginBox">
@@ -87,6 +89,10 @@
       </thead>
       <tbody></tbody>
     </table>
+    <div style="margin-top: 20px;">
+  <button onclick="exportTableToExcel()">📄 Export Excel</button>
+  <button onclick="exportTableToPDF()">📄 Export PDF</button>
+    </div>
   </section>
 
   <section id="calendrier">
@@ -109,12 +115,8 @@
   <button onclick="closeEdit()">❌ Annuler</button>
 </div>
 
-<div style="margin-top: 20px;">
-  <button onclick="exportTableToExcel()">📄 Export Excel</button>
-  <button onclick="exportTableToPDF()">📄 Export PDF</button>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
 function exportTableToExcel() {
   const table = document.querySelector("#dataTable");
   const wb = XLSX.utils.table_to_book(table, { sheet: "Interventions" });
