@@ -1,432 +1,172 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Suivi des Dossiers Clients - Pelichet</title>
-    <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#d95c14">
-    <link rel="apple-touch-icon" href="logo-192.png">
-    <style>
-        body {
-            font-family: 'Trebuchet MS', sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        header img {
-            height: 60px;
-        }
-        h1 {
-            color: #d95c14;
-        }
-        nav {
-            margin-bottom: 20px;
-        }
-        nav button {
-            margin-right: 10px;
-            padding: 10px 15px;
-            border: none;
-            background-color: #d95c14;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        section {
-            display: none;
-        }
-        section.active {
-            display: block;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            margin-bottom: 40px;
-            max-width: 600px;
-        }
-        form label {
-            display: block;
-            margin: 12px 0 6px;
-        }
-        form input, form textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-        form button {
-            margin-top: 15px;
-            background-color: #d95c14;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        #confirmation {
-            margin-top: 10px;
-            color: green;
-            font-weight: bold;
-        }
-        #calendar {
-            min-height: 600px;
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        table.dataTable {
-            width: 100% !important;
-            margin-top: 20px;
-            background-color: white;
-        }
-        #editModal {
-            display: none;
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            z-index: 9999;
-            max-width: 400px;
-        }
-        #editModal h3 {
-            margin-top: 0;
-        }
-        #editModal label {
-            display: block;
-            margin-bottom: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Suivi des Dossiers Clients - Pelichet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d95c14">
+  <link rel="apple-touch-icon" href="logo-192.png">
+  <style>
+    body { font-family: 'Trebuchet MS', sans-serif; padding: 20px; background: #f9f9f9; }
+    #loginBox, #mainApp { max-width: 800px; margin: auto; }
+    form, #loginBox { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #d95c14; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    #userDisplay { font-weight: bold; margin-bottom: 20px; }
+    #calendar { background: white; padding: 20px; border-radius: 10px; margin-top: 20px; }
+    table.dataTable { width: 100% !important; background: white; margin-top: 20px; }
+  </style>
 </head>
+<body>
 
-<!-- MODAL D'ÉDITION -->
-<div id="editModal">
-    <h3>Modifier l’intervention</h3>
-    <input type="hidden" id="editHorodatage">
-    
-    <label>Client :</label>
-    <input type="text" id="editClient">
-    
-    <label>Dossier :</label>
-    <input type="text" id="editDossier">
-    
-    <label>Moyens :</label>
-    <input type="text" id="editMoyens">
-    
-    <label>Date :</label>
-    <input type="date" id="editDate">
-    
-    <label>Montant :</label>
-    <input type="number" id="editMontant" step="0.01">
-    
-    <label>Commentaires :</label>
-    <textarea id="editCommentaires" rows="3"></textarea>
-
-    <label>Couleur du dossier :</label>
-    <input type="color" id="editCouleur" value="#d95c14">
-
-    <br><br>
-    <button onclick="submitEdit()">💾 Sauvegarder</button>
-    <button onclick="closeEdit()">❌ Annuler</button>
+<div id="loginBox">
+  <h3>Connexion</h3>
+  <label>Email :</label>
+  <input type="email" id="loginEmail" required>
+  <label>Mot de passe :</label>
+  <input type="password" id="loginPassword" required>
+  <button onclick="login()">Se connecter</button>
+  <p id="loginError" style="color: red;"></p>
 </div>
 
+<div id="mainApp" style="display: none;">
+  <header>
+    <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet" style="height: 60px;">
+    <h1>Suivi des Dossiers Clients</h1>
+  </header>
 
-<body>
-    <header>
-        <img src="LOGO-PELICHET.jpg" alt="Logo Pelichet">
-        <h1>Suivi des Dossiers Clients</h1>
-    </header>
+  <p id="userDisplay"></p>
 
-    <nav>
-        <button onclick="showSection('formulaire')">Formulaire</button>
-        <button onclick="showSection('tableau')">Tableau</button>
-        <button onclick="showSection('calendrier')">Calendrier</button>
-    </nav>
+  <form id="intervention-form">
+    <input type="hidden" id="utilisateur" name="utilisateur">
+    <label>Client :</label><input type="text" id="client" name="client" required>
+    <label>Dossier :</label><input type="text" id="dossier" name="dossier" required>
+    <label>Moyens :</label><input type="text" id="moyens" name="moyens">
+    <label>Date :</label><input type="date" id="date" name="date" required>
+    <label>Montant :</label><input type="number" id="montant" name="montant" step="0.01">
+    <label>Couleur :</label><input type="color" id="couleur" name="couleur" value="#d95c14">
+    <label>Commentaires :</label><textarea id="commentaires" name="commentaires"></textarea>
+    <button type="button" onclick="submitForm()">Enregistrer</button>
+    <div id="confirmation"></div>
+  </form>
 
-    <p id="userDisplay" style="font-weight: bold; margin-bottom: 20px;"></p>
+  <table id="dataTable" class="display">
+    <thead>
+      <tr><th>Client</th><th>Dossier</th><th>Moyens</th><th>Date</th><th>Montant</th><th>Commentaires</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-    <section id="formulaire" class="active">
-        <form id="intervention-form">
-            <label for="utilisateur">Utilisateur :</label>
-            <select id="utilisateur" name="utilisateur" required onchange="loadData()">
-                <option value="">-- Sélectionnez --</option>
-                <option value="arnaud.guedou@pelichet.ch">Arnaud</option>
-                <option value="nicolas.corazzol@pelichet.ch">Nicolas</option>
-                <option value="encule@example.com">Enculé</option>
-            </select>
+  <div id="calendar"></div>
+</div>
 
-            <label for="client">Nom du client :</label>
-            <input type="text" id="client" name="client" required>
-            <label for="dossier">Numéro de dossier :</label>
-            <input type="text" id="dossier" name="dossier" required>
-            <label for="moyens">Moyens à mettre :</label>
-            <input type="text" id="moyens" name="moyens">
-            <label for="date">Date de l’intervention :</label>
-            <input type="date" id="date" name="date" required>
-            <label for="montant">Montant facturé :</label>
-            <input type="number" id="montant" name="montant" step="0.01">
-            <label for="couleur">Couleur du dossier :</label>
-            <input type="color" id="couleur" name="couleur" value="#d95c14">
-            <label for="commentaires">Commentaires :</label>
-            <textarea id="commentaires" name="commentaires" rows="3"></textarea>
-            <button type="button" onclick="submitForm()">Enregistrer</button>
-            <div id="confirmation"></div>
-        </form>
-    </section>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
-    <section id="tableau">
-        <table id="dataTable" class="display">
-            <thead>
-                <tr>
-                    <th>Client</th>
-                    <th>Dossier</th>
-                    <th>Moyens</th>
-                    <th>Date</th>
-                    <th>Montant</th>
-                    <th>Commentaires</th>
-		     <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </section>
-
-    <section id="calendrier">
-        <div id="calendar"></div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script>
-        let calendar;
-
-        function showSection(id) {
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    const target = document.getElementById(id);
-    target.classList.add('active');
-
-    // Re-render le calendrier s'il devient visible
-    if (id === 'calendrier' && typeof calendar !== 'undefined') {
-        calendar.render();
-    }
-}
-
-
-        function submitForm() {
-            const form = document.getElementById("intervention-form");
-            const data = new FormData(form);
-            const params = new URLSearchParams();
-            for (const pair of data) {
-                params.append(pair[0], pair[1]);
-                
-            }
-
-            params.append("utilisateur", document.getElementById("utilisateur").value);
-
-            fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", {
-                method: "POST",
-                body: params
-            })
-            .then(response => response.text())
-            .then(result => {
-                document.getElementById("confirmation").textContent = "Intervention enregistrée avec succès !";
-                form.reset();
-                loadData();
-            })
-            .catch(error => {
-                document.getElementById("confirmation").textContent = "Erreur lors de l'enregistrement.";
-                console.error("Erreur :", error);
-            });
-        }
-	
-    const dossierColors = {};
-
-    function getColorForDossier(dossier) {
-        if (!dossierColors[dossier]) {
-            // Palette de couleurs possibles
-            const colors = ['#d95c14', '#007bff', '#28a745', '#ffc107', '#6f42c1', '#17a2b8', '#e83e8c', '#20c997'];
-            dossierColors[dossier] = colors[Object.keys(dossierColors).length % colors.length];
-        }
-        return dossierColors[dossier];
-    }
-
-
-	
-
-
-function formatDate(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    if (isNaN(date)) return dateStr;
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-}
-
-
-        
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.getElementById('calendar');
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'fr',
-                events: []
-            });
-            calendar.render();
-
-            $('#dataTable').DataTable();
-            if (document.getElementById("utilisateur").value) {
-        loadData();
-    }
-        });
-    </script>
-</body>
-</html>
-    <script>
-        function openEditForm(row) {
-            document.getElementById('editHorodatage').value = row.horodatage;
-            document.getElementById('editClient').value = row.client;
-            document.getElementById('editDossier').value = row.dossier;
-            document.getElementById('editMoyens').value = row.moyens;
-            if (row.date.includes('T')) {
-                document.getElementById('editDate').value = row.date.split('T')[0];
-            } else {
-                document.getElementById('editDate').value = row.date;
-            }
-
-            document.getElementById('editMontant').value = row.montant;
-            document.getElementById('editCommentaires').value = row.commentaires;
-            document.getElementById('editCouleur').value = row.couleur || '#d95c14';
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function submitEdit() {
-            const params = new URLSearchParams();
-            const userEmail = document.getElementById("utilisateur").value;
-            if (!userEmail) return;
-            params.append("horodatage", document.getElementById('editHorodatage').value);
-            params.append("client", document.getElementById('editClient').value);
-            params.append("dossier", document.getElementById('editDossier').value);
-            params.append("moyens", document.getElementById('editMoyens').value);
-            params.append("date", document.getElementById('editDate').value);
-            params.append("montant", document.getElementById('editMontant').value);
-            params.append("commentaires", document.getElementById('editCommentaires').value);
-            params.append("couleur", document.getElementById('editCouleur').value);
-            params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
-
-            fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?edit=1", {
-                method: "POST",
-                body: params
-            })
-            .then(response => response.text())
-            .then(res => {
-                closeEdit();
-                loadData();
-            });
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(reg => console.log("✅ Service Worker enregistré", reg))
-                .catch(err => console.warn("❌ Erreur Service Worker", err));
-        }
-    </script>
-	<script>
-function deleteEntry(horodatage) {
-  if (!confirm("Supprimer cette intervention ?")) return;
-
-  const params = new URLSearchParams();
-  const userEmail = document.getElementById("utilisateur").value;
-  if (!userEmail) return;
-
-  params.append("delete", "1");
-  params.append("horodatage", horodatage);
-  params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
-
-  fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", {
-    method: "POST",
-    body: params
-  })
-  .then(response => response.text())
-  .then(res => {
-    console.log("🗑️ Suppression réussie :", res);
-    loadData();
-  })
-  .catch(error => {
-    console.error("❌ Erreur lors de la suppression :", error);
-  });
-}
-
-</script>
-
-    <script>
-    	function closeEdit() {
-        	document.getElementById('editModal').style.display = 'none';
-    	}
-    </script>
 <script>
-        function loadData() {
-    const userEmail = document.getElementById("utilisateur").value;
-    if (!userEmail) {
-        console.warn("Aucun utilisateur sélectionné");
-        return;
+  const users = {
+    "arnaud.guedou@pelichet.ch": { password: "arnaud2024", nom: "Arnaud" },
+    "nicolas.corazzol@pelichet.ch": { password: "nicolas2024", nom: "Nicolas" }
+  };
+  let userEmail = "";
+
+  function login() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    if (users[email] && users[email].password === password) {
+      userEmail = email;
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("mainApp").style.display = "block";
+      document.getElementById("utilisateur").value = email;
+      document.getElementById("userDisplay").textContent = "Connecté : " + users[email].nom;
+      loadData();
+    } else {
+      document.getElementById("loginError").textContent = "Email ou mot de passe incorrect.";
     }
+  }
+
+  let calendar;
+
+  function submitForm() {
+    const data = new FormData(document.getElementById("intervention-form"));
+    const params = new URLSearchParams();
+    for (const [key, value] of data.entries()) {
+      params.append(key, value);
+    }
+    params.append("utilisateur", userEmail);
+
+    fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+      .then(res => res.text())
+      .then(() => {
+        document.getElementById("confirmation").textContent = "Donnée enregistrée.";
+        document.getElementById("intervention-form").reset();
+        loadData();
+      });
+  }
+
+  function loadData() {
+    if (!userEmail) return;
     document.getElementById("userDisplay").textContent = "Dossiers pour : " + userEmail;
-
-    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
-    
-        .then(response => response.json())
-        .then(data => {
-            const table = $('#dataTable').DataTable();
-            table.clear();
-            data.forEach(row => {
-                table.row.add([
-                    row.client,
-                    row.dossier,
-                    row.moyens,
-                    formatDate(row.date),
-                    row.montant,
-                    row.commentaires,
-                    `<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> 
-                     <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
-                ]);
-            });
-            table.draw();
-
-            calendar.removeAllEvents();
-            data.forEach(row => {
-                if (row.date) {
-                    calendar.addEvent({
-                        title: row.client + " (" + row.dossier + ")",
-                        start: row.date,
-                        color: row.couleur || '#d95c14'
-                    });
-                }
-            });
-        })
-        .catch(error => {
-            console.error("Erreur lors du chargement des données :", error);
+    fetch("TON_SCRIPT_URL?utilisateur=" + encodeURIComponent(userEmail))
+      .then(res => res.json())
+      .then(data => {
+        const table = $('#dataTable').DataTable();
+        table.clear();
+        data.forEach(row => {
+          table.row.add([
+            row.client,
+            row.dossier,
+            row.moyens,
+            formatDate(row.date),
+            row.montant,
+            row.commentaires,
+            `<button onclick='deleteEntry("${row.horodatage}")'>🗑️</button>`
+          ]);
         });
-}
-    </script>	
+        table.draw();
+        calendar.removeAllEvents();
+        data.forEach(row => {
+          if (row.date) {
+            calendar.addEvent({
+              title: row.client + " (" + row.dossier + ")",
+              start: row.date,
+              color: row.couleur || '#d95c14'
+            });
+          }
+        });
+      });
+  }
 
+  function deleteEntry(horodatage) {
+    if (!confirm("Supprimer ?")) return;
+    const params = new URLSearchParams();
+    params.append("delete", "1");
+    params.append("horodatage", horodatage);
+    params.append("utilisateur", userEmail);
+
+    fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+      .then(res => res.text())
+      .then(() => loadData());
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return isNaN(date) ? dateStr : date.toLocaleDateString("fr-FR");
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+      initialView: 'dayGridMonth',
+      locale: 'fr',
+      events: []
+    });
+    calendar.render();
+    $('#dataTable').DataTable();
+  });
+</script>
 </body>
 </html>
