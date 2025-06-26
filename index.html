@@ -266,43 +266,40 @@
     }
 
 
-	function loadData() {
-        const userEmail = document.getElementById("utilisateur").value;
-        if (!userEmail) return;
-        document.getElementById("utilisateur").addEventListener("change", loadData);
+	<script>
+function loadData() {
+    const userEmail = document.getElementById("utilisateur").value;
+    if (!userEmail) {
+        console.warn("Aucun utilisateur sélectionné");
+        return;
+    }
 
-    
-        fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
+    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
+
         .then(response => response.json())
         .then(data => {
-            console.log("📦 Données reçues :", data); // 🟢 Ajout ici
-
-            // Mise à jour du tableau
             const table = $('#dataTable').DataTable();
             table.clear();
             data.forEach(row => {
                 table.row.add([
-    			row.client,
-    			row.dossier,
-   			    row.moyens,
-   	 		    formatDate(row.date),
-    			row.montant,
-    			row.commentaires,
-    			`<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> 
-     			 <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
-		]);
-
+                    row.client,
+                    row.dossier,
+                    row.moyens,
+                    formatDate(row.date),
+                    row.montant,
+                    row.commentaires,
+                    `<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> 
+                     <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
+                ]);
             });
             table.draw();
 
-            // Mise à jour du calendrier
             calendar.removeAllEvents();
             data.forEach(row => {
                 if (row.date) {
                     calendar.addEvent({
                         title: row.client + " (" + row.dossier + ")",
                         start: row.date,
-                        description: row.commentaires,
                         color: row.couleur || '#d95c14'
                     });
                 }
@@ -312,6 +309,8 @@
             console.error("Erreur lors du chargement des données :", error);
         });
 }
+</script>
+
 
 function formatDate(dateStr) {
     if (!dateStr) return "";
