@@ -252,33 +252,7 @@
                 document.getElementById("confirmation").textContent = "Erreur lors de l'enregistrement.";
                 console.error("Erreur :", error);
             });
-        }function submitForm() {
-    const form = document.getElementById("intervention-form");
-    const data = new FormData(form);
-    const params = new URLSearchParams();
-
-    for (const pair of data) {
-        params.append(pair[0], pair[1]);
-    }
-
-    // pas besoin de ligne spéciale pour utilisateur ici, il est dans le formulaire
-
-    fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
-        method: "POST",
-        body: params
-    })
-    .then(response => response.text())
-    .then(result => {
-        document.getElementById("confirmation").textContent = "Intervention enregistrée avec succès !";
-        form.reset();
-        loadData();
-    })
-    .catch(error => {
-        document.getElementById("confirmation").textContent = "Erreur lors de l'enregistrement.";
-        console.error("Erreur :", error);
-    });
-}
-
+        }
 	
     const dossierColors = {};
 
@@ -293,7 +267,11 @@
 
 
 	function loadData() {
-        params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
+        const userEmail = document.getElementById("utilisateur").value;
+        if (!userEmail) return;
+        document.getElementById("utilisateur").addEventListener("change", loadData);
+
+    
         fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec")
         .then(response => response.json())
         .then(data => {
@@ -382,6 +360,8 @@ function formatDate(dateStr) {
 
         function submitEdit() {
             const params = new URLSearchParams();
+            const userEmail = document.getElementById("utilisateur").value;
+            if (!userEmail) return;
             params.append("horodatage", document.getElementById('editHorodatage').value);
             params.append("client", document.getElementById('editClient').value);
             params.append("dossier", document.getElementById('editDossier').value);
@@ -414,6 +394,9 @@ function deleteEntry(horodatage) {
   if (!confirm("Supprimer cette intervention ?")) return;
 
   const params = new URLSearchParams();
+  const userEmail = document.getElementById("utilisateur").value;
+  if (!userEmail) return;
+
   params.append("delete", "1");
   params.append("horodatage", horodatage);
   params.append("utilisateur", userEmail);  // Assure-toi que userEmail est bien défini
