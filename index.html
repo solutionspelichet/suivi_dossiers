@@ -18,14 +18,28 @@
     #userDisplay { font-weight: bold; margin-bottom: 20px; }
     #calendar { background: white; padding: 20px; border-radius: 10px; margin-top: 20px; }
     table.dataTable { width: 100% !important; background: white; margin-top: 20px; }
-    nav { margin-bottom: 20px; text-align: center; }
-    nav button { margin-right: 10px; }
+    nav { margin-bottom: 20px; }
+    nav button { margin-right: 10px; padding: 10px 15px; border: none; background-color: #d95c14; color: white; border-radius: 5px; cursor: pointer; }
     section { display: none; }
     section.active { display: block; }
+    #editModal {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      z-index: 9999;
+      max-width: 400px;
+    }
+    #editModal h3 { margin-top: 0; }
+    #editModal label { display: block; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-
 <div id="loginBox">
   <h3>Connexion</h3>
   <label>Email :</label>
@@ -42,13 +56,13 @@
     <h1>Suivi des Dossiers Clients</h1>
   </header>
 
-  <p id="userDisplay"></p>
-
   <nav>
     <button onclick="showSection('formulaire')">Formulaire</button>
     <button onclick="showSection('tableau')">Tableau</button>
     <button onclick="showSection('calendrier')">Calendrier</button>
   </nav>
+
+  <p id="userDisplay"></p>
 
   <section id="formulaire" class="active">
     <form id="intervention-form">
@@ -79,117 +93,162 @@
   </section>
 </div>
 
+<div id="editModal">
+  <h3>Modifier l’intervention</h3>
+  <input type="hidden" id="editHorodatage">
+  <label>Client :</label><input type="text" id="editClient">
+  <label>Dossier :</label><input type="text" id="editDossier">
+  <label>Moyens :</label><input type="text" id="editMoyens">
+  <label>Date :</label><input type="date" id="editDate">
+  <label>Montant :</label><input type="number" id="editMontant" step="0.01">
+  <label>Commentaires :</label><textarea id="editCommentaires"></textarea>
+  <label>Couleur :</label><input type="color" id="editCouleur" value="#d95c14">
+  <br><br>
+  <button onclick="submitEdit()">💾 Sauvegarder</button>
+  <button onclick="closeEdit()">❌ Annuler</button>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
 <script>
-  const users = {
-    "arnaud.guedou@pelichet.ch": { password: "arnaud2024", nom: "Arnaud" },
-    "nicolas.corazzol@pelichet.ch": { password: "nicolas2024", nom: "Nicolas" }
-  };
-  let userEmail = "";
+const users = {
+  "arnaud.guedou@pelichet.ch": { password: "arnaud2024", nom: "Arnaud" },
+  "nicolas.corazzol@pelichet.ch": { password: "nicolas2024", nom: "Nicolas" }
+};
+let userEmail = "";
+let calendar;
 
-  function login() {
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-    if (users[email] && users[email].password === password) {
-      userEmail = email;
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("mainApp").style.display = "block";
-      document.getElementById("utilisateur").value = email;
-      document.getElementById("userDisplay").textContent = "Connecté : " + users[email].nom;
-      showSection('formulaire');
+function login() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  if (users[email] && users[email].password === password) {
+    userEmail = email;
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("mainApp").style.display = "block";
+    document.getElementById("utilisateur").value = email;
+    document.getElementById("userDisplay").textContent = "Connecté : " + users[email].nom;
+    showSection('formulaire');
+    loadData();
+  } else {
+    document.getElementById("loginError").textContent = "Email ou mot de passe incorrect.";
+  }
+}
+
+function showSection(id) {
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'calendrier' && calendar) calendar.render();
+}
+
+function submitForm() {
+  const data = new FormData(document.getElementById("intervention-form"));
+  const params = new URLSearchParams();
+  for (const [key, value] of data.entries()) params.append(key, value);
+  params.append("utilisateur", userEmail);
+  fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+    .then(res => res.text())
+    .then(() => {
+      document.getElementById("confirmation").textContent = "Donnée enregistrée.";
+      document.getElementById("intervention-form").reset();
       loadData();
-    } else {
-      document.getElementById("loginError").textContent = "Email ou mot de passe incorrect.";
-    }
-  }
-
-  function showSection(id) {
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    if (id === 'calendrier' && calendar) calendar.render();
-  }
-
-  let calendar;
-
-  function submitForm() {
-    const data = new FormData(document.getElementById("intervention-form"));
-    const params = new URLSearchParams();
-    for (const [key, value] of data.entries()) {
-      params.append(key, value);
-    }
-    params.append("utilisateur", userEmail);
-
-    fetch("TON_SCRIPT_URL", { method: "POST", body: params })
-      .then(res => res.text())
-      .then(() => {
-        document.getElementById("confirmation").textContent = "Donnée enregistrée.";
-        document.getElementById("intervention-form").reset();
-        loadData();
-      });
-  }
-
-  function loadData() {
-    if (!userEmail) return;
-    document.getElementById("userDisplay").textContent = "Dossiers pour : " + userEmail;
-    fetch("TON_SCRIPT_URL?utilisateur=" + encodeURIComponent(userEmail))
-      .then(res => res.json())
-      .then(data => {
-        const table = $('#dataTable').DataTable();
-        table.clear();
-        data.forEach(row => {
-          table.row.add([
-            row.client,
-            row.dossier,
-            row.moyens,
-            formatDate(row.date),
-            row.montant,
-            row.commentaires,
-            `<button onclick='deleteEntry("${row.horodatage}")'>🗑️</button>`
-          ]);
-        });
-        table.draw();
-        calendar.removeAllEvents();
-        data.forEach(row => {
-          if (row.date) {
-            calendar.addEvent({
-              title: row.client + " (" + row.dossier + ")",
-              start: row.date,
-              color: row.couleur || '#d95c14'
-            });
-          }
-        });
-      });
-  }
-
-  function deleteEntry(horodatage) {
-    if (!confirm("Supprimer ?")) return;
-    const params = new URLSearchParams();
-    params.append("delete", "1");
-    params.append("horodatage", horodatage);
-    params.append("utilisateur", userEmail);
-
-    fetch("TON_SCRIPT_URL", { method: "POST", body: params })
-      .then(res => res.text())
-      .then(() => loadData());
-  }
-
-  function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return isNaN(date) ? dateStr : date.toLocaleDateString("fr-FR");
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
-      initialView: 'dayGridMonth',
-      locale: 'fr',
-      events: []
     });
-    calendar.render();
-    $('#dataTable').DataTable();
+}
+
+function openEditForm(row) {
+  document.getElementById('editHorodatage').value = row.horodatage;
+  document.getElementById('editClient').value = row.client;
+  document.getElementById('editDossier').value = row.dossier;
+  document.getElementById('editMoyens').value = row.moyens;
+  document.getElementById('editDate').value = row.date?.split('T')[0] || row.date;
+  document.getElementById('editMontant').value = row.montant;
+  document.getElementById('editCommentaires').value = row.commentaires;
+  document.getElementById('editCouleur').value = row.couleur || '#d95c14';
+  document.getElementById('editModal').style.display = 'block';
+}
+
+function closeEdit() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+function submitEdit() {
+  const params = new URLSearchParams();
+  params.append("edit", "1");
+  params.append("utilisateur", userEmail);
+  params.append("horodatage", document.getElementById("editHorodatage").value);
+  params.append("client", document.getElementById("editClient").value);
+  params.append("dossier", document.getElementById("editDossier").value);
+  params.append("moyens", document.getElementById("editMoyens").value);
+  params.append("date", document.getElementById("editDate").value);
+  params.append("montant", document.getElementById("editMontant").value);
+  params.append("commentaires", document.getElementById("editCommentaires").value);
+  params.append("couleur", document.getElementById("editCouleur").value);
+  fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+    .then(res => res.text())
+    .then(() => {
+      closeEdit();
+      loadData();
+    });
+}
+
+function deleteEntry(horodatage) {
+  if (!confirm("Supprimer ?")) return;
+  const params = new URLSearchParams();
+  params.append("delete", "1");
+  params.append("horodatage", horodatage);
+  params.append("utilisateur", userEmail);
+  fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+    .then(res => res.text())
+    .then(() => loadData());
+}
+
+function loadData() {
+  if (!userEmail) return;
+  document.getElementById("userDisplay").textContent = "Dossiers pour : " + userEmail;
+  fetch("TON_SCRIPT_URL?utilisateur=" + encodeURIComponent(userEmail))
+    .then(res => res.json())
+    .then(data => {
+      const table = $('#dataTable').DataTable();
+      table.clear();
+      data.forEach(row => {
+        table.row.add([
+          row.client,
+          row.dossier,
+          row.moyens,
+          formatDate(row.date),
+          row.montant,
+          row.commentaires,
+          `<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
+        ]);
+      });
+      table.draw();
+      calendar.removeAllEvents();
+      data.forEach(row => {
+        if (row.date) {
+          calendar.addEvent({
+            title: row.client + " (" + row.dossier + ")",
+            start: row.date,
+            color: row.couleur || '#d95c14'
+          });
+        }
+      });
+    });
+}
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return isNaN(date) ? dateStr : date.toLocaleDateString("fr-FR");
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+    initialView: 'dayGridMonth',
+    locale: 'fr',
+    events: []
   });
+  calendar.render();
+  $('#dataTable').DataTable();
+});
 </script>
 </body>
 </html>
