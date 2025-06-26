@@ -159,6 +159,8 @@
         <button onclick="showSection('calendrier')">Calendrier</button>
     </nav>
 
+    <p id="userDisplay" style="font-weight: bold; margin-bottom: 20px;"></p>
+
     <section id="formulaire" class="active">
         <form id="intervention-form">
             <label for="utilisateur">Utilisateur :</label>
@@ -266,49 +268,7 @@
     }
 
 
-	<script>
-function loadData() {
-    const userEmail = document.getElementById("utilisateur").value;
-    if (!userEmail) {
-        console.warn("Aucun utilisateur sélectionné");
-        return;
-    }
-fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
-    
-        .then(response => response.json())
-        .then(data => {
-            const table = $('#dataTable').DataTable();
-            table.clear();
-            data.forEach(row => {
-                table.row.add([
-                    row.client,
-                    row.dossier,
-                    row.moyens,
-                    formatDate(row.date),
-                    row.montant,
-                    row.commentaires,
-                    `<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> 
-                     <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
-                ]);
-            });
-            table.draw();
-
-            calendar.removeAllEvents();
-            data.forEach(row => {
-                if (row.date) {
-                    calendar.addEvent({
-                        title: row.client + " (" + row.dossier + ")",
-                        start: row.date,
-                        color: row.couleur || '#d95c14'
-                    });
-                }
-            });
-        })
-        .catch(error => {
-            console.error("Erreur lors du chargement des données :", error);
-        });
-}
-</script>
+	
 
 
 function formatDate(dateStr) {
@@ -333,7 +293,9 @@ function formatDate(dateStr) {
             calendar.render();
 
             $('#dataTable').DataTable();
-            loadData();
+            if (document.getElementById("utilisateur").value) {
+        loadData();
+    }
         });
     </script>
 </body>
@@ -420,7 +382,51 @@ function deleteEntry(horodatage) {
         	document.getElementById('editModal').style.display = 'none';
     	}
     </script>
-	
+<script>
+        function loadData() {
+    const userEmail = document.getElementById("utilisateur").value;
+    if (!userEmail) {
+        console.warn("Aucun utilisateur sélectionné");
+        return;
+    }
+    document.getElementById("userDisplay").textContent = "Dossiers pour : " + userEmail;
+
+    fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
+    
+        .then(response => response.json())
+        .then(data => {
+            const table = $('#dataTable').DataTable();
+            table.clear();
+            data.forEach(row => {
+                table.row.add([
+                    row.client,
+                    row.dossier,
+                    row.moyens,
+                    formatDate(row.date),
+                    row.montant,
+                    row.commentaires,
+                    `<button onclick='openEditForm(${JSON.stringify(row)})'>✏️</button> 
+                     <button onclick="deleteEntry('${row.horodatage}')">🗑️</button>`
+                ]);
+            });
+            table.draw();
+
+            calendar.removeAllEvents();
+            data.forEach(row => {
+                if (row.date) {
+                    calendar.addEvent({
+                        title: row.client + " (" + row.dossier + ")",
+                        start: row.date,
+                        color: row.couleur || '#d95c14'
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement des données :", error);
+        });
+}
+    </script>	
 
 </body>
 </html>
