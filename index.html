@@ -117,28 +117,6 @@
 
 
 
-function exportTableToExcel() {
-  const table = document.querySelector("#dataTable");
-  const wb = XLSX.utils.table_to_book(table, { sheet: "Interventions" });
-  XLSX.writeFile(wb, "interventions.xlsx");
-}
-
-async function exportTableToPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const table = document.querySelector("#dataTable");
-  let y = 10;
-  doc.setFontSize(12);
-  doc.text("Export des interventions", 10, y);
-  y += 10;
-  for (const row of table.querySelectorAll("tr")) {
-    const cells = [...row.querySelectorAll("th, td")].map(cell => cell.innerText.trim());
-    doc.text(cells.join(" | "), 10, y);
-    y += 7;
-  }
-  doc.save("interventions.pdf");
-}
-
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -289,6 +267,33 @@ function logout() {
   document.getElementById("loginEmail").value = "";
   document.getElementById("loginPassword").value = "";
   document.getElementById("loginError").textContent = "";
+}
+
+
+function exportTableToExcel() {
+  const table = document.querySelector("#dataTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet: "Interventions" });
+  XLSX.writeFile(wb, "interventions.xlsx");
+}
+
+async function exportTableToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const table = document.querySelector("#dataTable");
+  let y = 10;
+  doc.setFontSize(12);
+  doc.text("Export des interventions", 10, y);
+  y += 10;
+  for (const row of table.querySelectorAll("tr")) {
+    const cells = [...row.querySelectorAll("th, td")].map(cell => cell.innerText.trim());
+    doc.text(cells.join(" | "), 10, y);
+    y += 7;
+    if (y > 280) {
+      doc.addPage();
+      y = 10;
+    }
+  }
+  doc.save("interventions.pdf");
 }
 
 
