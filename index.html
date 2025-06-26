@@ -146,7 +146,7 @@ function submitForm() {
   const params = new URLSearchParams();
   for (const [key, value] of data.entries()) params.append(key, value);
   params.append("utilisateur", userEmail);
-  fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+  fetch("TON_SCRIPT_URLhttps://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", { method: "POST", body: params })
     .then(res => res.text())
     .then(() => {
       document.getElementById("confirmation").textContent = "Donnée enregistrée.";
@@ -183,7 +183,7 @@ function submitEdit() {
   params.append("montant", document.getElementById("editMontant").value);
   params.append("commentaires", document.getElementById("editCommentaires").value);
   params.append("couleur", document.getElementById("editCouleur").value);
-  fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+  fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", { method: "POST", body: params })
     .then(res => res.text())
     .then(() => {
       closeEdit();
@@ -197,7 +197,7 @@ function deleteEntry(horodatage) {
   params.append("delete", "1");
   params.append("horodatage", horodatage);
   params.append("utilisateur", userEmail);
-  fetch("TON_SCRIPT_URL", { method: "POST", body: params })
+  fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", { method: "POST", body: params })
     .then(res => res.text())
     .then(() => loadData());
 }
@@ -205,7 +205,7 @@ function deleteEntry(horodatage) {
 function loadData() {
   if (!userEmail) return;
   document.getElementById("userDisplay").textContent = "Dossiers pour : " + userEmail;
-  fetch("TON_SCRIPT_URL?utilisateur=" + encodeURIComponent(userEmail))
+  fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
     .then(res => res.json())
     .then(data => {
       const table = $('#dataTable').DataTable();
