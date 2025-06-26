@@ -146,7 +146,7 @@ function submitForm() {
   const params = new URLSearchParams();
   for (const [key, value] of data.entries()) params.append(key, value);
   params.append("utilisateur", userEmail);
-  fetch("TON_SCRIPT_URLhttps://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", { method: "POST", body: params })
+  fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec", { method: "POST", body: params })
     .then(res => res.text())
     .then(() => {
       document.getElementById("confirmation").textContent = "Donnée enregistrée.";
