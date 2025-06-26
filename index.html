@@ -109,6 +109,35 @@
   <button onclick="closeEdit()">❌ Annuler</button>
 </div>
 
+<div style="margin-top: 20px;">
+  <button onclick="exportTableToExcel()">📄 Export Excel</button>
+  <button onclick="exportTableToPDF()">📄 Export PDF</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+function exportTableToExcel() {
+  const table = document.querySelector("#dataTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet: "Interventions" });
+  XLSX.writeFile(wb, "interventions.xlsx");
+}
+
+async function exportTableToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const table = document.querySelector("#dataTable");
+  let y = 10;
+  doc.setFontSize(12);
+  doc.text("Export des interventions", 10, y);
+  y += 10;
+  for (const row of table.querySelectorAll("tr")) {
+    const cells = [...row.querySelectorAll("th, td")].map(cell => cell.innerText.trim());
+    doc.text(cells.join(" | "), 10, y);
+    y += 7;
+  }
+  doc.save("interventions.pdf");
+}
+
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
