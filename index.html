@@ -272,7 +272,7 @@
         document.getElementById("utilisateur").addEventListener("change", loadData);
 
     
-        fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec")
+        fetch("https://script.google.com/macros/s/AKfycbybpBpx_08UB50oTssiSfiKuReZny2E_6tRFBsdGBt-K-PJHsO4l8uVHDEteSzYM0MLjw/exec?utilisateur=" + encodeURIComponent(userEmail))
         .then(response => response.json())
         .then(data => {
             console.log("📦 Données reçues :", data); // 🟢 Ajout ici
